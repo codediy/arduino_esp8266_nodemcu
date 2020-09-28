@@ -4,7 +4,7 @@
 
 ESP8266WebServer httpServer(8080);
 
-const char* ssid = "833-2.4G";
+const char* ssid = "测试路由器";
 const char* password = "12356789";
 
 String Mac_Addr = "";

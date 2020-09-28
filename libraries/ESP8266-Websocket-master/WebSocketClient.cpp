@@ -1,4 +1,4 @@
-//#define DEBUGGING
+#define DEBUGGING
 
 //MS:
 
@@ -102,9 +102,9 @@ bool WebSocketClient::analyzeRequest() {
 #ifdef DEBUGGING
             Serial.print("Got Header: " + temp);
 #endif
-            if (!foundupgrade && temp.startsWith("Upgrade: websocket")) {
+            if (!foundupgrade && temp.startsWith("upgrade: websocket")) {
                 foundupgrade = true;
-            } else if (temp.startsWith("Sec-WebSocket-Accept: ")) {
+            } else if (temp.startsWith("sec-websocket-accept: ")) {
                 serverKey = temp.substring(22,temp.length() - 2); // Don't save last CR+LF
             }
             temp = "";		
@@ -137,6 +137,9 @@ bool WebSocketClient::analyzeRequest() {
     base64_encode(b64Result, result, 20);
 
     // if the keys match, good to go
+    Serial.println("serverKey: " + serverKey);
+    Serial.println("clientKey: " + String(b64Result));
+
     return serverKey.equals(String(b64Result));
 }
 

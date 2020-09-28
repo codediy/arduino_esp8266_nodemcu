@@ -13,7 +13,7 @@ void setup() {
   Serial.begin(115200);
     
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  scale.set_scale(460);
+  scale. (460);
   scale.tare();
 }
 
