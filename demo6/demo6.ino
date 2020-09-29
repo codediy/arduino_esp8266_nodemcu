@@ -3,6 +3,7 @@
 #include <ESP8266WebServer.h>     //Local WebServer used to serve the configuration portal
 #include <ESP8266WiFi.h>
 
+#include <TM1637_6D.h>
 #include <WebSocketClient.h>
 #include <ArduinoJson.h>
 
@@ -21,6 +22,8 @@ String Mac_Addr = "";
 
 String deviceid = "";
 int weight = 0;
+
+TM1637_6D display_b(D0,D1); // 6 digit led
 
 void setup_wifi() {
   delay(10);
@@ -65,9 +68,11 @@ void websocket_connect(){
 void setup() {
    
    Serial.begin(115200);
+   display_b.init();
+   display_b.set(BRIGHTEST);
    deviceid = "1234";
    setup_wifi();
-    websocket_connect();
+   websocket_connect();
 }
 
 void loop() {
@@ -79,9 +84,13 @@ void loop() {
         webSocketClient.getData(data);
         Serial.print("Received data: ");
         Serial.println(data);
+        if(data.length() > 0){
+            display_b.displayFloat(weight);
+        }
         weight = weight + 1;
    }else{
        Serial.print("client close ");
+       websocket_connect();
    }
 
    delay(1000);
