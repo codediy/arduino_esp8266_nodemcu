@@ -3,7 +3,7 @@
  * 通过ws客户端，与app的ws服务器通信， 7080端口
  * ws消息类型
  * type:ping            心跳消息，定时更新ip，上报秤的正常情况
- * type:repont_device   设备信息上报，上报mac,ip,误差weight，绑定货架id
+ * type:report_device   设备信息上报，上报mac,ip,误差weight，绑定货架id
  * type:report_factor   误差信息上报，上报factor
  * type:report_weight   单重信息上报，
  * type:report_change   重量变化上报，上报mac对应的weight
@@ -31,6 +31,32 @@
 // 秤
 #include "HX711.h"
 
+#ifndef WEIGHT
+// ws消息类型
+#define REPORT_DEVICE "report_device"
+#define REPORT_FACTOR_INFO "report_factor_info"  //计算的信息
+#define REPORT_FACTOR "report_factor"
+#define REPORT_WEIGHT "report_weight"
+#define REPORT_CHANGE "report_change"
+
+// http消息类型
+#define SET_LOCATION "set_location"
+#define SET_FACTOR "set_factor"
+#define SET_WEIGHT "set_weight"
+#define SET_CHANGE "set_change"
+
+// 秤的状态
+//0 默认状态 1 误差计算中 2 误差计算成功，3 单重测试中 4 单重计算成功 5 等待变化，6 变化发送处理中，7 故障停用 
+#define INIT_ING 0
+#define FACTOR_ING 1
+#define FACTOR_SUCCESS 2
+#define WEIGHT_ING 3
+#define WEIGHT_SUCCESS 4
+#define CHANGE_ING 5
+#define CHANGE_SEND_ING 6
+#define STOP_ING 7
+#endif
+
 const int httpPort = 6080;
 const int wsPort = 7080;
 
@@ -42,10 +68,12 @@ String mac = "";
 String ip = "";
 String location = ""; //货架位置信息 4位灯显示
 
-float real_weight = 10;   //误差计算是真实重量
-float calibration_factor = 460; //默认误差值
+float real_weight = 5000;   //误差计算是真实重量
+float calibration_factor = 110; //默认误差值
+
 int goods_number = 0;     //单重计算是物品的数量
 float per_weight = 0;     //单重
+
 float before_weight = 0;  //重量变化前的值
 float after_weight = 0;   //重量变化后的值
 
@@ -72,7 +100,7 @@ const int SCALE_DOUT_PIN = D5;
 const int SCALE_CLK_PIN = D6;
 
 HX711 scale;
-int scale_status = 0; //0 默认状态 1 误差计算中 2 误差计算成功，3 单重测试中 4 正常称重中
+int scale_status = INIT_ING;
 
 void setup_wifi() {
   // 板子通电后要启动，稍微等待一下让板子点亮
@@ -99,7 +127,7 @@ void setup_wifi() {
 }
 
 void handleRoot() {
-    String message = "POST form was:\n";
+    String message = "HTTP Data:\n";
     for (uint8_t i = 0; i < httpServer.args(); i++) {
       message += " " + httpServer.argName(i) + ": " + httpServer.arg(i) + "\n";
     }
@@ -107,43 +135,37 @@ void handleRoot() {
     String type = httpServer.arg("type");
     Serial.println(type.length());
     
-    if(type.length()>0){
+    if(type.length() > 0 && httpServer.arg("value").length() > 0){
        // 读取位置信息
-       if(type == "set_location" && httpServer.arg("location").length() > 0){
-          location = httpServer.arg("location");
+       if(type == SET_LOCATION){
+          location = httpServer.arg("value");
           Serial.print("Location:");
           Serial.println(location);
           display_location.showString(location.c_str());
        }
        // 设置误差信息
-       if(type == "set_factor" && httpServer.arg("weight").length() > 0){
-          const char* tmp = httpServer.arg("weight").c_str();
+       if(type == SET_FACTOR){
+          const char* tmp = httpServer.arg("value").c_str();
           real_weight =  atof(tmp);
           Serial.print("weight:");
           Serial.println(real_weight);
-          scale_status = 1;
-          // 动态计算误差值
-          factor_handle();
+          scale_status = FACTOR_ING;
        }
        // 单重计算中
-       if(type == "set_weight" && httpServer.arg("number").length() > 0){
-          const char* tmp = httpServer.arg("number").c_str();
+       if(type == SET_WEIGHT){
+          const char* tmp = httpServer.arg("value").c_str();
           goods_number =  atof(tmp);
           Serial.print("goods_number:");
           Serial.println(goods_number);
-          scale_status = 3;
-          // 动态计算误差值
-          weight_handle();
+          scale_status = WEIGHT_ING;
        }
        // 重量计算中
-       if(type == "set_change" && httpServer.arg("before").length() > 0){
-          const char* tmp = httpServer.arg("before").c_str();
+       if(type == SET_CHANGE){
+          const char* tmp = httpServer.arg("value").c_str();
           before_weight =  atof(tmp);
           Serial.print("before_weight:");
           Serial.println(before_weight);
-          scale_status = 4;
-          // 动态计算误差值
-          change_handle();
+          scale_status = CHANGE_ING;
        }
     }
     
@@ -178,43 +200,57 @@ void websocket_connect(){
  * ws客户消息处理
   */
 void ws_handle(){
+  Serial.println("ws_handle: ");
   if (client.connected()) {
      String response; //响应值
+     Serial.println("ws_handle:connected ");
      
-     if(location.length() > 0){
-        if(scale_status == 1){   //误差计算中
+     if(scale_status == INIT_ING && location.length() == 0){  //启动初始化 report_device
+          String requestString = "{'type':'"REPORT_DEVICE"','mac':'"+mac+"', 'ip':'"+ip+"','value':'0'}";
+          
+          Serial.print("INIT_ING requestString: "); 
+          Serial.println(requestString);
+          
+          webSocketClient.sendData(requestString);
+          webSocketClient.getData(response);
+          
+          if(response.length() > 0){
+              Serial.print("Init result: ");  
+              Serial.println(response);
+          }
+      }
+      if(scale_status == FACTOR_ING){   //误差计算
+          float weight_result = scale.get_units();
          
-        }
-        if(scale_status == 2){   //误差计算成功
-            String requestString = "{'type':'init_scale','mac':'"+mac+"', 'ip':'"+ip+"','weight':'"+factor+"'}";
-            
-            webSocketClient.sendData(requestString);
-            webSocketClient.getData(response);
-            
-            if(response.length() > 0){
-                Serial.print("Scale result: ");  
-                Serial.println(response);
-            }
-        }
-        if(scale_status == 3){   //单重计算中
-        
-        } 
-        if(scale_status == 4){   //正常使用中
-         
-        }
-     }else{
-        if(scale_status == 0){  //启动初始化 init
-            String requestString = "{'type':'init','mac':'"+mac+"', 'ip':'"+ip+"','weight':'0'}";
-            
-            webSocketClient.sendData(requestString);
-            webSocketClient.getData(response);
-            
-            if(response.length() > 0){
-                Serial.print("Init result: ");  
-                Serial.println(response);
-            }
-        }
-     }
+      }
+      if(scale_status == FACTOR_SUCCESS){   //误差计算成功
+          String requestString = "{'type':'"REPORT_FACTOR"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+calibration_factor+"'}";
+          Serial.print("FACTOR_SUCCESS requestString: "); 
+          Serial.println(requestString);
+           
+          webSocketClient.sendData(requestString);
+          webSocketClient.getData(response);
+          
+          if(response.length() > 0){
+              Serial.print("REPORT_FACTOR result: ");  
+              Serial.println(response);
+          }
+      }
+      if(scale_status == WEIGHT_ING){   //单重计算中
+         Serial.println("WEIGHT_ING...: ");
+      } 
+      if(scale_status == WEIGHT_SUCCESS){   //单重计算成功
+         Serial.println("WEIGHT_SUCCESS...: ");  
+      }
+      if(scale_status == CHANGE_ING){   //等待变化
+         Serial.println("CHANGE_ING...: ");  
+      }
+      if(scale_status == CHANGE_SEND_ING){   //重量变化处理中
+         Serial.println("CHANGE_SEND_ING...: ");  
+      }
+      if(scale_status == STOP_ING){   //停用
+         Serial.println("STOP_ING...: ");  
+      }
   }else{
     // ws客户端
     websocket_connect();
@@ -225,38 +261,106 @@ void ws_handle(){
  * 秤的处理
  */
 void scale_handle(){
-   if(scale_status == 0){  //启动初始化
+   Serial.println("scale_handle: ");
+   scale.set_scale(calibration_factor); 
+   float weight_result = (int)scale.get_units();
+  
+   Serial.println("Reading: ");
+   Serial.println(weight_result);
+  
+   if(scale_status == INIT_ING){    //启动初始化
    
    }
-   if(scale_status == 1){  //初始化中 误差较重
+   if(scale_status == FACTOR_ING){  //误差较重
         factor_handle();
    }
-   if(scale_status == 2){  //单重计算
-   
+   if(scale_status == FACTOR_SUCCESS){  //误差较重
+        
    }
-   if(scale_status == 3){  //正常称重
-   
+   if(scale_status == WEIGHT_ING){  //误差较重
+      
    }
+   if(scale_status == WEIGHT_SUCCESS){  //误差较重
+       
+   }
+   if(scale_status == CHANGE_ING){  //误差较重
+        
+   }
+   if(scale_status == CHANGE_SEND_ING){  //误差较重
+        
+   }
+   if(scale_status == STOP_ING){  //误差较重
+        
+   }
+   
 }
 
 /**
  * 动态计算误差值
  */
 void factor_handle(){
-  scale.set_scale(calibration_factor); //Adjust to this calibration factor
-  float weight_result = (float)scale.get_units();
+  Serial.println("factor_handle: ");
+  Serial.println(real_weight);
+  scale.set_scale(calibration_factor); 
+  int weight_result = (int)scale.get_units();
+
+  //重试次数 给ws留出时间发送误差信息
+  int nums = 0;  
+  int maxNum = 20;  
   
-  Serial.print("Reading: ");
-  Serial.print(weight_result);
-  
-  if(weight_result == real_weight){
-      scale_status = 2; //误差计算成功
-  }else if(weight_result > real_weight){
-      calibration_factor = calibration_factor + 5;
-  }else if(weight_result < real_weight){
-      calibration_factor = calibration_factor - 5;
+  while(real_weight > 0 && weight_result > 100 && scale_status == FACTOR_ING){
+      Serial.println("factor_handle nums: ");
+      Serial.println(nums);
+      nums = nums + 1;
+      if(nums >= maxNum){
+          String response; //响应值
+          String requestString = "{'type':'"REPORT_FACTOR_INFO"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+weight_result+"'}";
+          Serial.print("FACTOR_ING requestString: "); 
+          Serial.println(requestString);
+           
+          webSocketClient.sendData(requestString);
+          webSocketClient.getData(response);
+          
+          if(response.length() > 0){
+              Serial.print("REPORT_FACTOR result: ");  
+              Serial.println(response);
+          }
+          nums = 0;
+          continue;
+      }
+      scale.set_scale(calibration_factor); 
+      weight_result = (int)scale.get_units();
+      
+      Serial.print("Reading: ");
+      Serial.println(weight_result);
+      
+      Serial.print("Real: ");
+      Serial.println(real_weight);
+    
+      Serial.println(calibration_factor);
+    
+      int cha = real_weight - weight_result;
+      
+      if(cha > 100){
+         calibration_factor = calibration_factor - 1;
+      }if(cha > 20){
+         calibration_factor = calibration_factor - 0.1;
+      }else if(cha > 2){
+         calibration_factor = calibration_factor - 0.01;
+      }else if(cha < -100){
+         calibration_factor = calibration_factor + 1;
+      }else if(cha < -20){
+         calibration_factor = calibration_factor + 0.1;
+      }else if(cha < 0){
+         calibration_factor = calibration_factor + 0.01;
+      }else {
+         Serial.println("factor success");
+         scale_status = FACTOR_SUCCESS;
+      }
   }
-  
+}
+void weight_handle(){
+
 }
 void setup() {
   // 板子通电后要启动，稍微等待一下让板子点亮
@@ -280,12 +384,13 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("loop: ");
   // http响应处理
   httpServer.handleClient();
   // ws处理
   ws_handle();
   // 秤处理
   scale_handle();
-  
+
   delay(1000);
 }

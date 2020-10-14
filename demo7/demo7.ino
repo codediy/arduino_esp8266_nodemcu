@@ -6,7 +6,7 @@
 HX711 scale;
 
 //默认误差值
-float calibration_factor = 460;
+float calibration_factor = 112.78;
 
 void setup() {
   Serial.begin(115200);
@@ -40,9 +40,9 @@ void loop() {
   {
     char temp = Serial.read();
     if(temp == '+' || temp == 'a')
-      calibration_factor += 10;
+      calibration_factor += 0.01;
     else if(temp == '-' || temp == 'z')
-      calibration_factor -= 10;
+      calibration_factor -= 0.01;
   }
 
 }
