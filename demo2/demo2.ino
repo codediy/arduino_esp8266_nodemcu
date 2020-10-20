@@ -1,6 +1,6 @@
 #include <TM1637_6D.h>
-TM1637_6D display_b(D0,D1); // 6 digit led
-TM1637_6D display_c(D2,D3);// 6 digit led
+TM1637_6D display_b(D9,D10); // 6 digit led
+TM1637_6D display_c(D7,D8);// 6 digit led
 
 void setup() {
   // put your setup code here, to run once:

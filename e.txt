@@ -1,0 +1,170 @@
+Arduino:1.8.13 (Windows 10), 开发板："NodeMCU 1.0 (ESP-12E Module), 80 MHz, Flash, Legacy (new can return nullptr), All SSL ciphers (most compatible), 4MB (FS:2MB OTA:~1019KB), 2, v2 Lower Memory, Disabled, None, Only Sketch, 115200"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: warning: cannot find entry symbol app_entry; defaulting to 40100000
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-dtoa.o):(.literal+0x44): undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-dtoa.o): in function `_dtoa_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/dtoa.c:238: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o):(.literal+0x0): undefined reference to `_calloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o): in function `_Balloc':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:103: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:107: undefined reference to `_calloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:124: undefined reference to `_calloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o): in function `_Bfree':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:139: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o): in function `__pow5mult':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:435: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o):(.literal+0x0): undefined reference to `_malloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o):(.literal+0x4): undefined reference to `_realloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o):(.literal+0x8): undefined reference to `_free_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o): in function `__ssputs_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:202: undefined reference to `_malloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:213: undefined reference to `_realloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:217: undefined reference to `_free_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o): in function `__ssprint_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:293: undefined reference to `_malloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:304: undefined reference to `_realloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:309: undefined reference to `_free_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o): in function `_svfprintf_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:507: undefined reference to `_malloc_r'
+
+collect2.exe: error: ld returned 1 exit status
+
+exit status 1
+
+为开发板 NodeMCU 1.0 (ESP-12E Module) 编译时出错。
+
+
+
+在文件 -> 首选项开启
+“编译过程中显示详细输出”选项
+这份报告会包含更多信息。
+Arduino:1.8.13 (Windows 10), 开发板："NodeMCU 1.0 (ESP-12E Module), 80 MHz, Flash, Legacy (new can return nullptr), All SSL ciphers (most compatible), 4MB (FS:2MB OTA:~1019KB), 2, v2 Lower Memory, Disabled, None, Only Sketch, 115200"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: warning: cannot find entry symbol app_entry; defaulting to 40100000
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-dtoa.o):(.literal+0x44): undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-dtoa.o): in function `_dtoa_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/dtoa.c:238: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o):(.literal+0x0): undefined reference to `_calloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o): in function `_Balloc':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:103: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:107: undefined reference to `_calloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:124: undefined reference to `_calloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o): in function `_Bfree':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:139: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-mprec.o): in function `__pow5mult':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdlib/mprec.c:435: undefined reference to `malloc'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o):(.literal+0x0): undefined reference to `_malloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o):(.literal+0x4): undefined reference to `_realloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o):(.literal+0x8): undefined reference to `_free_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o): in function `__ssputs_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:202: undefined reference to `_malloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:213: undefined reference to `_realloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:217: undefined reference to `_free_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o): in function `__ssprint_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:293: undefined reference to `_malloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:304: undefined reference to `_realloc_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: /home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:309: undefined reference to `_free_r'
+
+c:/users/gigabyte/appdata/local/arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/2.5.0-4-b40a506/bin/../lib/gcc/xtensa-lx106-elf/4.8.2/../../../../xtensa-lx106-elf/bin/ld.exe: C:\Users\GIGABYTE\AppData\Local\Arduino15\packages\esp8266\hardware\esp8266\2.7.4/tools/sdk/libc/xtensa-lx106-elf/lib\libc.a(lib_a-nano-svfprintf.o): in function `_svfprintf_r':
+
+/home/earle/src/esp-quick-toolchain/repo/newlib/newlib/libc/stdio/nano-vfprintf.c:507: undefined reference to `_malloc_r'
+
+collect2.exe: error: ld returned 1 exit status
+
+exit status 1
+
+为开发板 NodeMCU 1.0 (ESP-12E Module) 编译时出错。
+
+
+
+在文件 -> 首选项开启
+“编译过程中显示详细输出”选项
+这份报告会包含更多信息。

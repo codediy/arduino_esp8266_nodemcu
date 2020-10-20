@@ -35,6 +35,7 @@
 
 #ifndef WEIGHT
 // ws消息类型
+#define REPORT_PING "report_ping"  //心跳监测
 #define REPORT_DEVICE "report_device"
 #define REPORT_FACTOR_INFO "report_factor_info"  //计算的信息
 #define REPORT_FACTOR "report_factor"
@@ -315,20 +316,18 @@ void ws_handle(){
          Serial.println("STOP_ING...: ");  
       }
       
-      if(location.length() > 0){ //托盘位置设置后
-          //实时心跳 发送状态信息
-          String requestString = "{'type':'"REPORT_DEVICE"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+scale_status+"'}";
-              
-          Serial.print("REPORT_DEVICE requestString: "); 
-          Serial.println(requestString);
+      //实时心跳 发送状态信息
+      String requestString = "{'type':'"REPORT_PING"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+scale_status+"'}";
           
-          webSocketClient.sendData(requestString);
-          webSocketClient.getData(response);
-          
-          if(response.length() > 0){
-              Serial.print("REPORT_DEVICE result: ");  
-              Serial.println(response);
-          }
+      Serial.print("REPORT_PING requestString: "); 
+      Serial.println(requestString);
+      
+      webSocketClient.sendData(requestString);
+      webSocketClient.getData(response);
+      
+      if(response.length() > 0){
+          Serial.print("REPORT_PING result: ");  
+          Serial.println(response);
       }
       
   }else{
