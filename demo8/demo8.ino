@@ -1,3 +1,18 @@
+/**
+ * 单重计算
+ */
+#include <ESP8266WiFi.h>       
+#include <DNSServer.h>            
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>     
+
+// 4位灯
+#include <TM1637TinyDisplay.h>
+#include <TM1637_6D.h>
+#include <WebSocketClient.h>
+#include <ArduinoJson.h>
+
+// 秤
 #include "HX711.h"
 
 #define DOUT  D5
@@ -12,12 +27,47 @@
 #define CHANGE_SEND_ING 6
 #define STOP_ING 7
 
-HX711 scale;
+
 
 //默认误差值
 float real_weight = 5000;   //误差计算是真实重量
 float calibration_factor = 110; //默认误差值
+
+
+int goods_number = 3;     //单重计算是物品的数量
+float per_weight = 20;     //单重
+
+float before_weight = 300;  //重量变化前的值
+int before_number = 0;
+float after_weight = 0;   //重量变化后的值
+int after_number = 0;
+/**
+ * 四位灯显示位置信息
+ */
+const int LOCATION_CLK_PIN = D3;
+const int LOCATION_DIO_PIN = D4;
+TM1637TinyDisplay display_location(LOCATION_CLK_PIN,LOCATION_DIO_PIN);
+
+/**
+ * 秤
+ */
+const int SCALE_DOUT_PIN = D5;
+const int SCALE_CLK_PIN = D6;
+
+HX711 scale;
 int scale_status = FACTOR_ING;
+
+/**
+ * 六位灯
+ */
+const int WEIGHT_CLK_PIN = D7;
+const int WEIGHT_DIO_PIN = D8;
+
+const int WEIGHT_CHANGE_CLK_PIN = D9;
+const int WEIGHT_CHANGE_DIO_PIN = D10;
+
+
+
 /**
  * 动态计算误差值
  */
@@ -63,28 +113,43 @@ void factor_handle(){
 void setup() {
   Serial.begin(115200);
   Serial.println("HX711 calibration sketch");
-  Serial.println("Remove all weight from scale");
-  Serial.println("After readings begin, place known weight on scale");
-  Serial.println("Press + or a to increase calibration factor");
-  Serial.println("Press - or z to decrease calibration factor");
   
-  scale.begin(DOUT, CLK);
+  scale.begin(SCALE_DOUT_PIN, SCALE_CLK_PIN);
   scale.set_scale();
   scale.tare(); //Reset the scale to 0
-  
-  long zero_factor = scale.read_average(); //Get a baseline reading
-  Serial.print("Zero factor: "); //This can be used to remove the need to tare the scale. Useful in permanent scale projects.
-  Serial.println(zero_factor);
+}
 
+void weight_handle(){
+  float weight_result = (int)scale.get_units();
+  if(goods_number > 0){
+     per_weight = weight_result / goods_number;
+  }
+
+  Serial.println("weight_handle: ");
+  Serial.print("weight_result: ");
+  Serial.println(weight_result);
+  Serial.print("goods_number: ");
+  Serial.println(goods_number);
+  Serial.print("per_weight: ");
+  Serial.println(per_weight);
+}
+void change_handle(){
+  
 }
 
 void loop() {
-  float weight_result = (int)scale.get_units();
-  Serial.println("weight_result: ");
-  Serial.println(weight_result);
+
+  Serial.println("loop: ");
 
   if(scale_status == FACTOR_ING){
      factor_handle();
   }
+  if(scale_status == FACTOR_SUCCESS){
+     weight_handle();
+  }
+  if(scale_status == CHANGE_ING){
+     change_handle();
+  }
+  
   delay(1000);
 }
