@@ -30,7 +30,7 @@
 
 
 //默认误差值
-float real_weight = 245;   //误差计算是真实重量
+float real_weight = 5000;   //误差计算是真实重量
 float calibration_factor = 110; //默认误差值
 
 
@@ -111,25 +111,6 @@ void factor_handle(){
   }
 }
 
-void setup() {
-  Serial.begin(115200);
-  Serial.println("HX711 calibration sketch");
-
-  
-  scale.begin(SCALE_DOUT_PIN, SCALE_CLK_PIN);
-  scale.set_scale();
-  scale.tare(); //Reset the scale to 0
-
-  display_location.setBrightness(0x0f);
-  
-  display_weight.init();
-  display_weight_change.init();
-
-  
-  display_weight.set(BRIGHTEST);
-  display_weight_change.set(BRIGHTEST);
-  
-}
 
 void weight_handle(){
   float weight_result = (float)scale.get_units();
@@ -153,9 +134,25 @@ void weight_handle(){
   after_number = 0;
 
   display_change();
-  scale_status = CHANGE_ING;
+  
+  scale_status = WEIGHT_SUCCESS;
+
 }
 
+void change_setup(){
+   Serial.print("change_setup: ");
+   after_weight = (float)scale.get_units();
+   Serial.println(after_weight);
+    
+   if(after_weight <= 2){
+       before_weight = 0;
+       before_number = 0;
+       after_weight = 0;
+       after_number = 0;
+
+       scale_status = CHANGE_ING;
+   }
+}
 void display_change(){
    int change_number = after_number - before_number;
    
@@ -195,17 +192,43 @@ void change_handle(){
   }
 }
 
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("HX711 calibration sketch");
+
+  
+  scale.begin(SCALE_DOUT_PIN, SCALE_CLK_PIN);
+  scale.set_scale();
+  scale.tare(); //Reset the scale to 0
+
+  display_location.setBrightness(0x0f);
+  
+  display_weight.init();
+  display_weight_change.init();
+
+  
+  display_weight.set(BRIGHTEST);
+  display_weight_change.set(BRIGHTEST);
+
+  //显示灯初始化
+  display_location.showString("A101");
+  display_change();
+}
+
 void loop() {
 
   Serial.println("loop: ");
 
-  display_location.showString("A101");
-  
+  display_change();
   if(scale_status == FACTOR_ING){
      factor_handle();
   }
   if(scale_status == FACTOR_SUCCESS){
      weight_handle();
+  }
+  if(scale_status == WEIGHT_SUCCESS){
+     change_setup();
   }
   if(scale_status == CHANGE_ING){
      change_handle();
