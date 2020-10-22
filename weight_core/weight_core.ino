@@ -75,9 +75,9 @@
 const int httpPort = 6080;
 const int wsPort = 7080;
 
-const char* ssid = "技术部";
-const char* password = "12356789";
-char host[] = "192.168.1.179"; //ws服务器
+const char* ssid = "wqvmi";
+const char* password = "wq12356789;";
+char host[] = "192.168.0.101"; //ws服务器
 
 bool is_send_setup = false;
 String mac = "";
@@ -278,9 +278,12 @@ void ws_handle(){
   if (client.connected()) {
      String response; //响应值
      Serial.println("ws_handle:connected ");
-     float weight_change = after_weight - before_weight;
+     after_weight = (float)scale.get_units();
+     int weight_change = after_weight - before_weight;
      
-     Serial.print("weight_change  "); 
+     Serial.println("weight_change  "); 
+     Serial.println(before_weight);
+     Serial.println(after_weight);
      Serial.println(weight_change);
      
      if(scale_status == INIT_ING && weight_change > 100){  // 启动初始化 当重量变化的时候 report_device
@@ -295,6 +298,12 @@ void ws_handle(){
           if(response.length() > 0){
               Serial.print("REPORT_DEVICE result: ");  
               Serial.println(response);
+
+              //重置重量信息
+              before_weight = 0;
+              before_number = 0;
+              after_weight = 0;
+              after_number = 0;
           }
       }
       if(scale_status == FACTOR_ING){   //误差计算中
@@ -332,26 +341,38 @@ void ws_handle(){
       }
       if(scale_status == WEIGHT_ING){   //单重计算中
          Serial.println("WEIGHT_ING...: ");
+         String requestString = "{'type':'"REPORT_WEIGHT"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+String(per_weight)+"'}";
+         Serial.print("WEIGHT_SUCCESS requestString: "); 
+         Serial.println(requestString);
+           
+         webSocketClient.sendData(requestString);
+         webSocketClient.getData(response);
+          
+         if(response.length() > 0){
+            Serial.print("WEIGHT_SUCCESS result: ");  
+            Serial.println(response);
+         }
       } 
       if(scale_status == WEIGHT_SUCCESS){   //单重计算成功
-          String requestString = "{'type':'"REPORT_WEIGHT"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+String(per_weight)+"'}";
-          Serial.print("WEIGHT_SUCCESS requestString: "); 
-          Serial.println(requestString);
-           
-          webSocketClient.sendData(requestString);
-          webSocketClient.getData(response);
-          
-          if(response.length() > 0){
-              Serial.print("WEIGHT_SUCCESS result: ");  
-              Serial.println(response);
-              
-          }
+          Serial.println("WEIGHT_SUCCESS...: ");
       }
       if(scale_status == CHANGE_ING){   //等待变化
          Serial.println("CHANGE_ING...: ");  
+         int temp_change = after_number - before_number;
+         String requestString = "{'type':'"REPORT_CHANGE"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+String(temp_change)+"'}";
+         Serial.print("CHANGE_SEND_ING requestString: "); 
+         Serial.println(requestString);
+           
+         webSocketClient.sendData(requestString);
+         webSocketClient.getData(response);
+          
+         if(response.length() > 0){
+            Serial.print("WEIGHT_SUCCESS result: ");  
+            Serial.println(response);
+         } 
       }
       if(scale_status == CHANGE_SEND_ING){   //重量变化处理中
-         Serial.println("CHANGE_SEND_ING...: ");  
+         Serial.println("CHANGE_SEND_ING...: "); 
       }
       if(scale_status == STOP_ING){   //停用
          Serial.println("STOP_ING...: ");  
@@ -470,20 +491,20 @@ void factor_handle(){
          calibration_factor = calibration_factor + 0.01;
       }else {
          Serial.println("factor success");
+         scale.set_scale(calibration_factor); 
          scale_status = FACTOR_SUCCESS;
       }
   }
 }
 void weight_handle(){
   Serial.println("weight_handle");
-  float weight_result = (float)scale.get_units();
+  int temp_weight = (int)scale.get_units();
   Serial.println(goods_number);
-   
-  if(goods_number > 0){
+ 
+  if(goods_number > 0 && temp_weight > 0){
+     float weight_result = (float)scale.get_units();
      per_weight = weight_result / goods_number;
-     Serial.println("weight success");
-     
-     scale_status = WEIGHT_SUCCESS;
+     Serial.println("weight_handle:WEIGHT_SUCCESS "+String(per_weight));
   }
 
   //重置重量信息
@@ -538,14 +559,8 @@ void change_handle(){
       display_change();
       
       if(after_number - before_number > 1){
-         //显示变化数量
-         delay(3000); //3秒后修改当前数量
-         before_weight = after_weight;
-         before_number = after_number;
-         display_change();
-    
          // 发送变化数据
-         //scale_status = CHANGE_SEND_ING
+         Serial.println("weight_change: ");
       }
   }
 }
@@ -602,7 +617,10 @@ void setup() {
   scale.begin(SCALE_DOUT_PIN, SCALE_CLK_PIN);
   scale.set_scale();
   scale.tare(); //Reset the scale to 0
-
+  
+  before_weight = (float)scale.get_units();
+  after_weight = before_weight;
+  
   // 灯
   display_location.setBrightness(0x0f);
   
