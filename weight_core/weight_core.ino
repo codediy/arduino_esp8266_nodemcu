@@ -20,6 +20,8 @@
  * type:set_weight       单重计算中 
  * type:set_change       重量计算中
 
+       重量计算中
+
  */
 
 #include <ESP8266WiFi.h>       
@@ -190,13 +192,18 @@ void handleRoot() {
                 Serial.println("SET_DEVICE set_scale:"+String(calibration_factor));
                 float weight_result = (float)scale.get_units();
                 Serial.println("SET_DEVICE weight_result:"+String(weight_result));
-                
-                //重置重量信息
-                before_weight = 0;
-                before_number = 0;
+
                 after_weight = 0;
                 after_number = 0;
-              
+                    
+                if(set_status > WEIGHT_ING && per_weight > 0){
+                    before_weight = weight_result;
+                    before_number = before_weight / per_weight;
+                }else{
+                    //重置重量信息
+                    before_weight = 0;
+                    before_number = 0;
+                }
                 display_change();
              }
              scale_status = set_status;
@@ -242,9 +249,22 @@ void handleRoot() {
        // 重量计算中
        if(type == SET_CHANGE){
           const char* tmp = httpServer.arg("value").c_str();
-          before_weight =  atof(tmp);
           Serial.print("before_weight:");
           Serial.println(before_weight);
+          float weight_result = (float)scale.get_units();
+
+          after_weight = 0;
+          after_number = 0;
+              
+          if(per_weight > 0){
+              before_weight = weight_result;
+              before_number = before_weight / per_weight;
+          }else{
+              //重置重量信息
+              before_weight = 0;
+              before_number = 0;
+          }
+          display_change();
           scale_status = CHANGE_ING;
        }
     }
@@ -358,7 +378,11 @@ void ws_handle(){
       }
       if(scale_status == CHANGE_ING){   //等待变化
          Serial.println("CHANGE_ING...: ");  
-         int temp_change = after_number - before_number;
+         // 显示变化数量
+         display_change();
+
+         // 提交变化数量
+         int temp_change = change_number_round();
          String requestString = "{'type':'"REPORT_CHANGE"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+String(temp_change)+"'}";
          Serial.print("CHANGE_SEND_ING requestString: "); 
          Serial.println(requestString);
@@ -370,6 +394,7 @@ void ws_handle(){
             Serial.print("WEIGHT_SUCCESS result: ");  
             Serial.println(response);
          } 
+         
       }
       if(scale_status == CHANGE_SEND_ING){   //重量变化处理中
          Serial.println("CHANGE_SEND_ING...: "); 
@@ -532,8 +557,7 @@ void change_setup(){
    }
 }
 void display_change(){
-   int change_number = after_number - before_number;
-   
+   int change_number = change_number_round();
    Serial.println("display_change:before_number,after_number,change_number ");
    Serial.println(before_number);
    Serial.println(after_number);
@@ -565,6 +589,31 @@ void change_handle(){
   }
 }
 
+int change_number_round(){
+   Serial.println("change_number_round: ");
+   float temp_change_weight = abs(after_weight - before_weight);
+   Serial.println("temp_change_weight: "+String(temp_change_weight));
+   int temp_change = round(temp_change_weight/per_weight);
+   Serial.println("temp_change: "+String(temp_change));
+   return temp_change;
+}
+
+int change_number()
+{
+  int temp_change = floor(abs(after_number - before_number));
+  //获取半个上下浮动
+  float temp_half_per = per_weight / 2;
+  int min_change_weight = temp_change * per_weight - temp_half_per;
+  int max_change_weight = temp_change * per_weight + temp_half_per;
+
+  float temp_change_weight = abs(after_weight - before_weight);
+  if(temp_change_weight < min_change_weight){
+     temp_change = temp_change - 1;
+  }else if(temp_change_weight > max_change_weight){
+     temp_change = temp_change + 1;
+  }
+  return temp_change;
+}
 /**
  * 初始化读取设备信息
  */

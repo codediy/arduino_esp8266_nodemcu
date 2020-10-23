@@ -168,17 +168,17 @@ void TM1637_6D::displayFloat(float floatdisplay)
   {
       floatstring =  String(floatdisplay, 6-numberofdigits); // convertering integer to a string
       decimal_point_add = 0;
-    //Serial.println(floatstring.length());
+      Serial.println(floatstring.length());
       for(i = 0; i < (floatstring.length() - decimal_point_add); i++) 
       {
         
         // number "0" in ASCII is 48 in decimal. If we substract the character value
         // with 48, we will get the actual number it is representing as a character
-      tempListDisp[i] = floatstring[floatstring.length()-i-1-decimal_point_add] - 48;
+        tempListDisp[i] = floatstring[floatstring.length()-i-1-decimal_point_add] - 48;
         if(floatstring[floatstring.length()-i-2] == '.')
         {
           tempListDispPoint[i+1] = 1; // set decimal point
-      decimal_point_add = 1;
+          decimal_point_add = 1;
         }
       }
   }
@@ -186,10 +186,58 @@ void TM1637_6D::displayFloat(float floatdisplay)
 
   for(int n = 0;n<6;n++){
       display(n,tempListDisp[5-n],tempListDispPoint[5-n]);
-      //Serial.println(tempListDispPoint[5-n]);
+      Serial.println(tempListDispPoint[5-n]);
   }
 
   }
+}
+
+void TM1637_6D::displayIngRight(int numberDisplay)
+{ 
+  /* 显示内容 tempListDisp数字显示,tempListDispPoint小数点显示 */
+  int8_t tempListDisp[6] = {10,10,10,10,10,10}; // fill array with value for blank digit
+  int8_t tempListDispPoint[6] = {0x00,0x00,0x00,0x00,0x00,0x00}; // don't show any points
+  int8_t i = 0; 
+  
+  String numberStirng; 
+  if(numberDisplay > 0 && numberDisplay <= 999999)
+  {
+      numberStirng =  String(numberDisplay); // convertering integer to a string
+      //从第一个位置开始取数字
+      /* 
+        d  5 4 3 2 1 0  显示的位置
+        s  0 0 0 0 0 1  数字长度
+           0 0 0 0 0 0  
+       */    
+      int pad_length = 6 - numberStirng.length();
+      Serial.print("numberStirng:");
+      Serial.println(numberStirng);
+      Serial.println(pad_length);
+
+      for(i = 0; i < 6; i++) 
+      {
+         Serial.println("tempListDisp");
+         Serial.println(i);
+
+         if(i < pad_length){
+            tempListDisp[5 - i] = 0;
+         } else{
+            Serial.println(numberStirng[i - pad_length]);
+            tempListDisp[5 - i] = numberStirng[i - pad_length] - 48;
+         }
+         
+         Serial.println(tempListDisp[i]);
+      }
+  }
+
+  for(int n = 0;n<6;n++){
+      display(n,tempListDisp[5-n],tempListDispPoint[5-n]);
+      Serial.print("number digit");
+      Serial.print(n);
+      Serial.print(",");
+      Serial.println(tempListDispPoint[5-n]);
+  }
+
 }
 
 //******************************************
