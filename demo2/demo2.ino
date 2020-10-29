@@ -18,7 +18,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  display_b.displayIngRight(12000000);
+  display_b.displayIngRight(120);
 //  display_c.displayFloat(1234.56);
   delay(3000);
 }

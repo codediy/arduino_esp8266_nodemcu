@@ -19,7 +19,7 @@
  * type:set_factor_info  设置误差中 
  * type:set_weight       单重计算中 
  * type:set_change       重量计算中
-
+ * type:set_reset        重置初始化
        重量计算中
 
  */
@@ -79,15 +79,16 @@ const int wsPort = 7080;
 
 const char* ssid = "wqvmi";
 const char* password = "wq12356789;";
-char host[] = "192.168.0.101"; //ws服务器
+char host[] = "192.168.0.179"; //ws服务器
 
 bool is_send_setup = false;
 String mac = "";
 String ip = "";
 String location = ""; //货架位置信息 4位灯显示
 
+float default_factor = 110;   //默认误差值
 float real_weight = 5000;   //误差计算是真实重量
-float calibration_factor = 110; //默认误差值
+float calibration_factor = default_factor;
 
 int goods_number = 0;     //单重计算是物品的数量
 float per_weight = 0;     //单重
@@ -205,6 +206,17 @@ void handleRoot() {
                     before_number = 0;
                 }
                 display_change();
+             }else{
+                location = "";
+                calibration_factor = default_factor;
+                per_weight  = 0;
+
+                after_weight = 0;
+                after_number = 0;
+                
+                before_weight = 0;
+                before_number = 0;
+                
              }
              scale_status = set_status;
           } 
@@ -253,17 +265,18 @@ void handleRoot() {
           Serial.println(before_weight);
           float weight_result = (float)scale.get_units();
 
-          after_weight = 0;
-          after_number = 0;
-              
+          before_weight = 0;
+          before_number = 0;
+          
           if(per_weight > 0){
-              before_weight = weight_result;
-              before_number = before_weight / per_weight;
+              after_weight = weight_result;
+              after_number = after_weight / per_weight;
           }else{
               //重置重量信息
-              before_weight = 0;
-              before_number = 0;
+              after_weight = weight_result;
+              after_number = 0;
           }
+
           display_change();
           scale_status = CHANGE_ING;
        }
@@ -467,7 +480,7 @@ void factor_handle(){
 
   //重试次数 给ws留出时间发送误差信息
   int nums = 0;  
-  int maxNum = 10;  
+  int maxNum = 5;  
   
   while(real_weight > 0 && weight_result > 100 && scale_status == FACTOR_ING){
       Serial.println("factor_handle nums: ");
@@ -564,7 +577,7 @@ void display_change(){
    Serial.println(change_number);
   
    display_weight.displayFloat(before_number);
-   display_weight_change.displayFloat(change_number);
+   display_weight_change.displayIntRight(change_number);
 }
 
 void change_handle(){

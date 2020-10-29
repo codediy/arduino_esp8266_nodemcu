@@ -61,7 +61,7 @@ class TM1637_6D
     void displaylong(int8_t DispData[]);
     void display(uint8_t BitAddr,int8_t DispData,int8_t PointFlag);
     void displayFloat(float floatdisplay);
-    void displayIngRight(int floatdisplay);
+    void displayIntRight(int floatdisplay);
     void clearDisplay(void);
     void set(uint8_t = BRIGHT_TYPICAL,uint8_t = 0x40,uint8_t = 0xc0);//To take effect the next time it displays.
     void point(boolean PointFlag);//whether to light the clock point ":".To take effect the next time it displays.

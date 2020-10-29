@@ -192,7 +192,7 @@ void TM1637_6D::displayFloat(float floatdisplay)
   }
 }
 
-void TM1637_6D::displayIngRight(int numberDisplay)
+void TM1637_6D::displayIntRight(int numberDisplay)
 { 
   /* 显示内容 tempListDisp数字显示,tempListDispPoint小数点显示 */
   int8_t tempListDisp[6] = {10,10,10,10,10,10}; // fill array with value for blank digit
@@ -216,8 +216,8 @@ void TM1637_6D::displayIngRight(int numberDisplay)
 
       for(i = 0; i < 6; i++) 
       {
-         Serial.println("tempListDisp");
-         Serial.println(i);
+        //  Serial.println("tempListDisp");
+        //  Serial.println(i);
 
          if(i < pad_length){
             tempListDisp[5 - i] = 0;
@@ -232,10 +232,10 @@ void TM1637_6D::displayIngRight(int numberDisplay)
 
   for(int n = 0;n<6;n++){
       display(n,tempListDisp[5-n],tempListDispPoint[5-n]);
-      Serial.print("number digit");
-      Serial.print(n);
-      Serial.print(",");
-      Serial.println(tempListDispPoint[5-n]);
+      // Serial.print("number digit");
+      // Serial.print(n);
+      // Serial.print(",");
+      // Serial.println(tempListDispPoint[5-n]);
   }
 
 }
