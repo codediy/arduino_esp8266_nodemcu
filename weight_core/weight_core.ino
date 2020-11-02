@@ -75,7 +75,7 @@
 #endif
 
 //版本号
-const char* weight_version = "V001";
+const char* weight_version = "V003";
 const int httpPort = 6080;
 const int wsPort = 7080;
 
@@ -196,17 +196,31 @@ void handleRoot() {
                 float weight_result = (float)scale.get_units();
                 Serial.println("SET_DEVICE weight_result:"+String(weight_result));
 
-                after_weight = 0;
-                after_number = 0;
-                    
-                if(set_status > WEIGHT_ING && per_weight > 0){ //计算当前数量
-                    before_weight = weight_result;
-                    before_number = before_weight / per_weight;
-                }else{
-                    //重置重量信息
+                if(set_status == WEIGHT_ING){ //单重计算 
                     before_weight = 0;
                     before_number = 0;
+
+                    after_weight = weight_result;
+                    
+                    if(set_status > WEIGHT_ING && per_weight > 0){ //计算当前数量
+                        after_number = after_weight / per_weight;
+                    }else{
+                        //重置重量信息
+                        after_number = 0;
+                    }
                 }
+                if(set_status == CHANGE_ING){ //变化计算
+                    before_weight = weight_result;
+                    if(set_status > WEIGHT_ING && per_weight > 0){ //计算当前数量
+                        before_number = before_weight / per_weight;
+                    }else{
+                        //重置重量信息
+                        before_number = 0;
+                    }
+                    after_weight = before_weight;
+                    after_number = before_number;
+                }
+                
                 display_change();
              }else{
                 location = "";
@@ -267,12 +281,10 @@ void handleRoot() {
        // 重量计算中
        if(type == SET_CHANGE){
           const char* tmp = httpServer.arg("value").c_str();
-          Serial.print("before_weight:");
-          Serial.println(before_weight);
-          float weight_result = (float)scale.get_units();
-
           int set_status =  atof(tmp);
-
+          
+          float weight_result = (float)scale.get_units();
+          
           if(set_status == 0){ //开始计算 初始化before为0 after为当前真的
               before_weight = 0;
               before_number = 0;
