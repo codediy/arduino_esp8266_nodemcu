@@ -74,6 +74,8 @@
 
 #endif
 
+//版本号
+const char* weight_version = "V001";
 const int httpPort = 6080;
 const int wsPort = 7080;
 
@@ -197,7 +199,7 @@ void handleRoot() {
                 after_weight = 0;
                 after_number = 0;
                     
-                if(set_status > WEIGHT_ING && per_weight > 0){
+                if(set_status > WEIGHT_ING && per_weight > 0){ //计算当前数量
                     before_weight = weight_result;
                     before_number = before_weight / per_weight;
                 }else{
@@ -211,13 +213,17 @@ void handleRoot() {
                 calibration_factor = default_factor;
                 per_weight  = 0;
 
-                after_weight = 0;
-                after_number = 0;
+                // 重置误差值
+                scale.set_scale(default_factor);
                 
-                before_weight = 0;
-                before_number = 0;
-                
+                before_weight = (float)scale.get_units();
+                after_weight = before_weight;
+                Serial.println("SET_DEVICE weight_result:"+String(before_weight));
+
+                // 灯的显示
+                display_init();
              }
+             // 重置状态
              scale_status = set_status;
           } 
        }
@@ -265,18 +271,34 @@ void handleRoot() {
           Serial.println(before_weight);
           float weight_result = (float)scale.get_units();
 
-          before_weight = 0;
-          before_number = 0;
-          
-          if(per_weight > 0){
-              after_weight = weight_result;
-              after_number = after_weight / per_weight;
-          }else{
-              //重置重量信息
-              after_weight = weight_result;
-              after_number = 0;
-          }
+          int set_status =  atof(tmp);
 
+          if(set_status == 0){ //开始计算 初始化before为0 after为当前真的
+              before_weight = 0;
+              before_number = 0;
+
+              after_weight = weight_result;
+              
+              if(per_weight > 0){
+                  after_number = after_weight / per_weight;
+              }else{
+                  after_number = 0;
+              }
+          }
+          if(set_status == 1){ //重新开始计算 初始化before为当前真的，after为为当前真的
+               before_weight = weight_result;
+           
+              if(per_weight > 0){
+                  before_number = after_weight / per_weight;
+              }else{
+                  //重置数量信息
+                  before_number = 0;
+              }
+               
+              after_weight = before_weight;
+              after_number = before_number;
+          }
+         
           display_change();
           scale_status = CHANGE_ING;
        }
@@ -319,8 +341,8 @@ void ws_handle(){
      Serial.println(after_weight);
      Serial.println(weight_change);
      
-     if(scale_status == INIT_ING && weight_change > 100){  // 启动初始化 当重量变化的时候 report_device
-          String requestString = "{'type':'"REPORT_DEVICE"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+scale_status+"'}";
+     if(scale_status == INIT_ING){  // 启动初始化 当重量变化的时候 report_device
+          String requestString = "{'type':'"REPORT_DEVICE"','mac':'"+mac+"', 'ip':'"+ip+"','value':'"+String(weight_change)+"'}";
           
           Serial.print("REPORT_DEVICE requestString: "); 
           Serial.println(requestString);
@@ -331,12 +353,6 @@ void ws_handle(){
           if(response.length() > 0){
               Serial.print("REPORT_DEVICE result: ");  
               Serial.println(response);
-
-              //重置重量信息
-              before_weight = 0;
-              before_number = 0;
-              after_weight = 0;
-              after_number = 0;
           }
       }
       if(scale_status == FACTOR_ING){   //误差计算中
@@ -569,8 +585,14 @@ void change_setup(){
        after_number = 0;
    }
 }
+void display_init(){
+  //版本号
+  display_location.showString(weight_version);
+  display_weight.displayFloat(0);
+  display_weight_change.displayFloat(before_weight);
+}
 void display_change(){
-   int change_number = change_number_round();
+   int change_number = abs(change_number_round());
    Serial.println("display_change:before_number,after_number,change_number ");
    Serial.println(before_number);
    Serial.println(after_number);
@@ -604,7 +626,7 @@ void change_handle(){
 
 int change_number_round(){
    Serial.println("change_number_round: ");
-   float temp_change_weight = abs(after_weight - before_weight);
+   float temp_change_weight = after_weight - before_weight;
    Serial.println("temp_change_weight: "+String(temp_change_weight));
    int temp_change = round(temp_change_weight/per_weight);
    Serial.println("temp_change: "+String(temp_change));
@@ -677,12 +699,12 @@ void setup() {
 
   // 秤
   scale.begin(SCALE_DOUT_PIN, SCALE_CLK_PIN);
-  scale.set_scale();
+  scale.set_scale(default_factor);
   scale.tare(); //Reset the scale to 0
   
   before_weight = (float)scale.get_units();
   after_weight = before_weight;
-  
+  Serial.print("SETUP before_weight: "+String(before_weight));  
   // 灯
   display_location.setBrightness(0x0f);
   
@@ -693,15 +715,13 @@ void setup() {
   display_weight_change.set(BRIGHTEST);
 
   //六位灯显示
-  display_change();
+  display_init();
 }
 
 void loop() {
   Serial.println("loop: "+String(scale_status));
 
   if(scale_status < 0){
-    //六位灯显示
-    display_change();
     // 初始化信息读取
     init_scale();
   }else{
